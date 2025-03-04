@@ -1,32 +1,46 @@
-# Microservice Architecture
+# Microservice Architecture Dashboard
 
-A scalable microservice system with API gateway, service discovery, and load balancing using Node.js, Docker, Kubernetes, and gRPC.
+A modern, scalable microservice system with API gateway, service discovery, and real-time monitoring dashboard built with Node.js and Express.
 
-## Architecture Overview
+## Features
 
-This project implements a microservice architecture with the following components:
-
-- **API Gateway**: Entry point for all client requests, handles routing to appropriate services
-- **Service Discovery**: Using Consul for service registration and discovery
+- **Interactive Dashboard**: Real-time monitoring of service health and metrics
+- **API Gateway**: Centralized entry point with rate limiting and request routing
+- **Service Discovery**: Automatic service registration and health checks using Consul
+- **Load Balancing**: Intelligent request distribution across service instances
+- **Metrics & Monitoring**: Prometheus metrics collection and visualization
+- **Mock Data Support**: Fallback to mock data when services are unavailable
+- **Swagger Documentation**: Interactive API documentation
 - **Microservices**:
-  - User Service: Manages user data
-  - Product Service: Manages product data
-  - Order Service: Manages order processing
-- **Communication**: Using gRPC for inter-service communication
-- **Database**: MongoDB for data persistence
-- **Containerization**: Docker for containerization
-- **Orchestration**: Kubernetes for container orchestration and scaling
+  - User Service: User management and authentication
+  - Product Service: Product catalog and inventory
+  - Order Service: Order processing and management
+
+## Tech Stack
+
+- **Backend**: Node.js, Express
+- **Service Discovery**: Consul
+- **Metrics**: Prometheus
+- **Documentation**: Swagger/OpenAPI
+- **Database**: MongoDB
+- **Communication**: gRPC
+- **Containerization**: Docker
+- **Orchestration**: Kubernetes
 
 ## Project Structure
 
 ```
 .
 ├── api-gateway/
+│   ├── middleware/
+│   │   └── metrics.js
+│   ├── public/
+│   │   ├── index.html
+│   │   ├── scripts.js
+│   │   └── styles.css
+│   ├── routes/
+│   │   └── swagger.js
 │   └── server.js
-├── protos/
-│   ├── user.proto
-│   ├── product.proto
-│   └── order.proto
 ├── services/
 │   ├── user-service/
 │   │   ├── models/
@@ -40,6 +54,10 @@ This project implements a microservice architecture with the following component
 │       ├── models/
 │       │   └── order.js
 │       └── server.js
+├── protos/
+│   ├── user.proto
+│   ├── product.proto
+│   └── order.proto
 ├── kubernetes/
 │   ├── api-gateway-deployment.yaml
 │   ├── user-service-deployment.yaml
@@ -47,88 +65,130 @@ This project implements a microservice architecture with the following component
 │   ├── order-service-deployment.yaml
 │   ├── consul-deployment.yaml
 │   └── mongodb-deployment.yaml
-├── Dockerfile
+├── scripts/
+│   └── start-all.js
 ├── docker-compose.yml
-├── package.json
-└── .env
+├── Dockerfile
+└── package.json
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14+)
-- Docker and Docker Compose
-- Kubernetes cluster (for production deployment)
+- Node.js (v18 or later)
 - MongoDB
+- Docker and Docker Compose (for containerized deployment)
+- Kubernetes (for production deployment)
 
 ### Local Development
 
-1. Clone the repository
-2. Install dependencies:
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd microservice-architecture
    ```
+
+2. Install dependencies:
+   ```bash
    npm install
    ```
-3. Start the services using Docker Compose:
+
+3. Set up environment variables:
+   Create a `.env` file in the root directory with the following content:
+   ```env
+   # API Gateway
+   API_GATEWAY_PORT=3000
+   
+   # Service Discovery
+   CONSUL_HOST=localhost
+   CONSUL_PORT=8500
+   
+   # User Service
+   USER_SERVICE_PORT=3001
+   USER_SERVICE_HOST=localhost
+   
+   # Product Service
+   PRODUCT_SERVICE_PORT=3002
+   PRODUCT_SERVICE_HOST=localhost
+   
+   # Order Service
+   ORDER_SERVICE_PORT=3003
+   ORDER_SERVICE_HOST=localhost
+   
+   # MongoDB
+   MONGODB_URI=mongodb://localhost:27017/microservices
    ```
-   docker-compose up
+
+4. Start all services:
+   ```bash
+   npm run start:all
+   ```
+
+   Or start individual services:
+   ```bash
+   npm run start           # API Gateway
+   npm run start:user     # User Service
+   npm run start:product  # Product Service
+   npm run start:order    # Order Service
+   ```
+
+5. Access the services:
+   - Dashboard: http://localhost:3000
+   - API Documentation: http://localhost:3000/api-docs
+   - Metrics: http://localhost:3000/metrics
+
+### Docker Deployment
+
+1. Build and run using Docker Compose:
+   ```bash
+   docker-compose up --build
    ```
 
 ### Kubernetes Deployment
 
-1. Build the Docker image:
-   ```
-   docker build -t microservice-architecture:latest .
-   ```
-
-2. Apply Kubernetes configurations:
-   ```
+1. Apply Kubernetes configurations:
+   ```bash
    kubectl apply -f kubernetes/
    ```
 
 ## API Endpoints
 
-The API Gateway exposes the following endpoints:
-
 ### User Service
 - `GET /api/users` - List all users
-- `GET /api/users/:id` - Get a specific user
-- `POST /api/users` - Create a new user
-- `PUT /api/users/:id` - Update a user
-- `DELETE /api/users/:id` - Delete a user
+- `GET /api/users/:id` - Get user by ID
+- `POST /api/users` - Create new user
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
 
 ### Product Service
 - `GET /api/products` - List all products
-- `GET /api/products/:id` - Get a specific product
-- `POST /api/products` - Create a new product
-- `PUT /api/products/:id` - Update a product
-- `DELETE /api/products/:id` - Delete a product
+- `GET /api/products/:id` - Get product by ID
+- `POST /api/products` - Create new product
+- `PUT /api/products/:id` - Update product
+- `DELETE /api/products/:id` - Delete product
 
 ### Order Service
 - `GET /api/orders` - List all orders
-- `GET /api/orders/:id` - Get a specific order
-- `POST /api/orders` - Create a new order
-- `PUT /api/orders/:id` - Update an order status
-- `DELETE /api/orders/:id` - Delete an order
+- `GET /api/orders/:id` - Get order by ID
+- `POST /api/orders` - Create new order
+- `PUT /api/orders/:id` - Update order status
+- `DELETE /api/orders/:id` - Delete order
 
-## Features
+## Dashboard Features
 
-- **Scalability**: Services can be scaled independently based on demand
-- **Resilience**: Fault isolation between services
-- **Service Discovery**: Automatic service registration and discovery
-- **Load Balancing**: Requests are distributed across service instances
-- **API Gateway**: Single entry point for all client requests
-- **gRPC Communication**: Efficient inter-service communication
-- **Containerization**: Docker containers for consistent deployment
-- **Orchestration**: Kubernetes for container management and scaling
+- **System Status**: Real-time monitoring of API Gateway and service health
+- **Service Health**: Individual service status and uptime tracking
+- **Request Distribution**: Visual representation of API request distribution
+- **Response Times**: Service response time monitoring
+- **Interactive API Testing**: Built-in API testing interface for all endpoints
 
-## Architecture Diagram
+## Architecture
 
 ```
 ┌─────────────┐
-│             │
 │   Clients   │
-│             │
+│  Dashboard  │
 └──────┬──────┘
        │
        ▼
@@ -153,3 +213,43 @@ The API Gateway exposes the following endpoints:
      │           │
      └───────────┘
 ```
+
+## Monitoring & Metrics
+
+The system collects various metrics using Prometheus:
+
+- Request duration
+- Request counts by endpoint
+- Service response times
+- Error rates
+- System resource usage
+
+## Error Handling
+
+The system implements comprehensive error handling:
+
+- Service unavailability fallback to mock data
+- Rate limiting protection
+- Request timeout handling
+- Graceful service degradation
+- Detailed error logging
+
+## Security
+
+- Rate limiting on all API endpoints
+- Request validation
+- Error message sanitization
+- Secure service communication
+- Environment variable configuration
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
