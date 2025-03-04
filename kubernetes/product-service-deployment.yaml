@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  labels:
+    app: product-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+      - name: product-service
+        image: microservice-architecture:latest
+        imagePullPolicy: IfNotPresent
+        command: ["node", "services/product-service/server.js"]
+        ports:
+        - containerPort: 3002
+        env:
+        - name: PRODUCT_SERVICE_PORT
+          value: "3002"
+        - name: PRODUCT_SERVICE_HOST
+          value: "0.0.0.0"
+        - name: CONSUL_HOST
+          value: "consul"
+        - name: CONSUL_PORT
+          value: "8500"
+        - name: MONGODB_URI
+          value: "mongodb://mongodb:27017/microservices"
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.2"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product-service
+  ports:
+  - port: 3002
+    targetPort: 3002
+  type: ClusterIP

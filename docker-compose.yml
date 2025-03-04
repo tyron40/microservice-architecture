@@ -1,0 +1,88 @@
+version: '3'
+
+services:
+  api-gateway:
+    build: .
+    command: node api-gateway/server.js
+    ports:
+      - "3000:3000"
+    environment:
+      - API_GATEWAY_PORT=3000
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - MONGODB_URI=mongodb://mongodb:27017/microservices
+    depends_on:
+      - consul
+      - mongodb
+    networks:
+      - microservice-network
+
+  user-service:
+    build: .
+    command: node services/user-service/server.js
+    environment:
+      - USER_SERVICE_PORT=3001
+      - USER_SERVICE_HOST=user-service
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - MONGODB_URI=mongodb://mongodb:27017/microservices
+    depends_on:
+      - consul
+      - mongodb
+    networks:
+      - microservice-network
+
+  product-service:
+    build: .
+    command: node services/product-service/server.js
+    environment:
+      - PRODUCT_SERVICE_PORT=3002
+      - PRODUCT_SERVICE_HOST=product-service
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - MONGODB_URI=mongodb://mongodb:27017/microservices
+    depends_on:
+      - consul
+      - mongodb
+    networks:
+      - microservice-network
+
+  order-service:
+    build: .
+    command: node services/order-service/server.js
+    environment:
+      - ORDER_SERVICE_PORT=3003
+      - ORDER_SERVICE_HOST=order-service
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - MONGODB_URI=mongodb://mongodb:27017/microservices
+    depends_on:
+      - consul
+      - mongodb
+      - user-service
+      - product-service
+    networks:
+      - microservice-network
+
+  consul:
+    image: consul:latest
+    ports:
+      - "8500:8500"
+    networks:
+      - microservice-network
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - microservice-network
+
+networks:
+  microservice-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

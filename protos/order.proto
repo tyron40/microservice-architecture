@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package order;
+
+service OrderService {
+  rpc GetOrder (GetOrderRequest) returns (Order) {}
+  rpc CreateOrder (CreateOrderRequest) returns (Order) {}
+  rpc UpdateOrder (UpdateOrderRequest) returns (Order) {}
+  rpc DeleteOrder (DeleteOrderRequest) returns (DeleteOrderResponse) {}
+  rpc ListOrders (ListOrdersRequest) returns (ListOrdersResponse) {}
+}
+
+message GetOrderRequest {
+  string id = 1;
+}
+
+message CreateOrderRequest {
+  string user_id = 1;
+  repeated OrderItem items = 2;
+  string shipping_address = 3;
+}
+
+message UpdateOrderRequest {
+  string id = 1;
+  string status = 2;
+}
+
+message DeleteOrderRequest {
+  string id = 1;
+}
+
+message DeleteOrderResponse {
+  bool success = 1;
+}
+
+message ListOrdersRequest {
+  string user_id = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message ListOrdersResponse {
+  repeated Order orders = 1;
+  int32 total = 2;
+}
+
+message OrderItem {
+  string product_id = 1;
+  int32 quantity = 2;
+  double price = 3;
+}
+
+message Order {
+  string id = 1;
+  string user_id = 2;
+  repeated OrderItem items = 3;
+  double total_amount = 4;
+  string status = 5;
+  string shipping_address = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}

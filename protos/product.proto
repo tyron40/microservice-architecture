@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package product;
+
+service ProductService {
+  rpc GetProduct (GetProductRequest) returns (Product) {}
+  rpc CreateProduct (CreateProductRequest) returns (Product) {}
+  rpc UpdateProduct (UpdateProductRequest) returns (Product) {}
+  rpc DeleteProduct (DeleteProductRequest) returns (DeleteProductResponse) {}
+  rpc ListProducts (ListProductsRequest) returns (ListProductsResponse) {}
+}
+
+message GetProductRequest {
+  string id = 1;
+}
+
+message CreateProductRequest {
+  string name = 1;
+  string description = 2;
+  double price = 3;
+  int32 stock = 4;
+}
+
+message UpdateProductRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int32 stock = 5;
+}
+
+message DeleteProductRequest {
+  string id = 1;
+}
+
+message DeleteProductResponse {
+  bool success = 1;
+}
+
+message ListProductsRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message ListProductsResponse {
+  repeated Product products = 1;
+  int32 total = 2;
+}
+
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int32 stock = 5;
+  string created_at = 6;
+  string updated_at = 7;
+}
